@@ -1,0 +1,85 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  # This job extracts the changelog once and shares it with the build jobs
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      release_notes: ${{ steps.extract_notes.outputs.notes }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract Release Notes
+        id: extract_notes
+        shell: node {0}
+        run: |
+          const fs = require('fs');
+          const changelog = fs.readFileSync('CHANGELOG.md', 'utf8');
+          const tagName = process.env.GITHUB_REF_NAME;
+          const escapedTag = tagName.replace(/\./g, '\\.');
+          // Matches '## vX.Y.Z' followed by anything until the next '## ' or end of file
+          const regex = new RegExp(`## ${escapedTag}[^\\n]*\\n([^]*?)(?=\\n## |$)`);
+          const match = regex.exec(changelog);
+          let notes = match ? match[1].trim() : `See [CHANGELOG.md](./CHANGELOG.md) for details.`;
+          
+          // Escape for GitHub Action Output
+          notes = notes.replace(/%/g, '%25').replace(/\n/g, '%0A').replace(/\r/g, '%0D');
+          console.log(`::set-output name=notes::${notes}`);
+
+  build:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+          - platform: macos-latest
+            target: aarch64-apple-darwin
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install system dependencies (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libgtk-3-dev libjavascriptcoregtk-4.1-dev libsoup-3.0-dev
+
+      - name: Build
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'Linen ${{ github.ref_name }}'
+          # We pass the pre-extracted notes here
+          releaseBody: ${{ needs.prepare.outputs.release_notes }}
+          releaseDraft: false
+          prerelease: false
