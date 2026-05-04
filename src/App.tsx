@@ -23,6 +23,14 @@ function App() {
     loadInitialSession()
   }, [loadInitialSession])
 
+  useEffect(() => {
+    if (isLoaded) {
+      import('@tauri-apps/api/core').then(({ invoke }) => {
+        invoke('close_splashscreen').catch(console.error)
+      }).catch(() => {})
+    }
+  }, [isLoaded])
+
   const resolvedTheme = settings.theme === 'system'
     ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
     : settings.theme

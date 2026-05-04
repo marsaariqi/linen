@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linen</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: transparent;
+      color: #fff;
+      font-family: system-ui, -apple-system, sans-serif;
+      user-select: none;
+      overflow: hidden;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: #1e1e1e; /* matches a dark background theme */
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-sizing: border-box;
+    }
+    .loading-bar {
+      height: 100%;
+      width: 30%;
+      background-color: #ffffff; /* neutral color for dark theme */
+      border-radius: 2px;
+      animation: slide 1.5s ease-in-out infinite;
+    }
+    img {
+      width: 96px;
+      height: 96px;
+      margin-bottom: 24px;
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+    }
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0;
+      letter-spacing: 0.5px;
+    }
+    .loading-bar-container {
+      width: 140px;
+      height: 4px;
+      background-color: rgba(128, 128, 128, 0.2);
+      border-radius: 2px;
+      margin-top: 24px;
+      overflow: hidden;
+    }
+    @media (prefers-color-scheme: light) {
+      .container {
+        background-color: #ffffff;
+        color: #121212;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+      .loading-bar {
+        background-color: #121212; /* neutral color for light theme */
+      }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(0.95); }
+    }
+    @keyframes slide {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(350%); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="/icon.svg" alt="Linen Logo">
+    <h1>Linen</h1>
+    <div class="loading-bar-container">
+      <div class="loading-bar"></div>
+    </div>
+  </div>
+</body>
+</html>

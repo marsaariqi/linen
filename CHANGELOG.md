@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.3 (2026-05-04)
+
+### New Features
+
+- Added a native splashscreen with a theme-adaptive loading bar to improve startup feedback
+- Main window now automatically maximizes when the application finishes loading
+
 ## v0.1.2 (2026-05-04)
 
 ### Bug Fixes
