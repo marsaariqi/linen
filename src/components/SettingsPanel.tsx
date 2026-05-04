@@ -48,8 +48,14 @@ export default function SettingsPanel({ onClose }: Props) {
     try {
       const { appDataDir, join } = await import('@tauri-apps/api/path')
       const { revealItemInDir } = await import('@tauri-apps/plugin-opener')
+      const { exists } = await import('@tauri-apps/plugin-fs')
       const dir = await appDataDir()
-      await revealItemInDir(await join(dir, 'session.json'))
+      const sessionPath = await join(dir, 'session.json')
+      if (await exists(sessionPath)) {
+        await revealItemInDir(sessionPath)
+      } else {
+        await revealItemInDir(dir)
+      }
     } catch (e) {
       console.error('Failed to open app folder', e)
     }

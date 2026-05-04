@@ -12,9 +12,14 @@
     "opener:default",
     "core:path:default",
     "fs:allow-appdata-read",
+    "fs:allow-appdata-write",
+    "fs:allow-read",
+    "fs:allow-write",
+    "fs:allow-exists",
+    "fs:allow-mkdir",
     {
       "identifier": "fs:scope",
-      "allow": [{ "path": "$APPDATA/**" }, { "path": "$APPDATA" }]
+      "allow": [{ "path": "$APPDATA/**" }, { "path": "$APPDATA" }, { "path": "**" }]
     }
   ]
 }
