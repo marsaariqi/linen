@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.2 (2026-05-04)
+
+### Bug Fixes
+
+- Fixed save functionality (Ctrl+S, Save icon, Unsaved changes modal) by explicitly adding required Tauri v2 FS scope and write permissions
+- Improved "Open App Folder" action in Settings to gracefully fall back to the app data directory if the session file has not been created yet
+
 ## v0.1.1 (2026-05-04)
 
 ### New Features
