@@ -30,9 +30,10 @@ jobs:
           const match = regex.exec(changelog);
           let notes = match ? match[1].trim() : `See [CHANGELOG.md](./CHANGELOG.md) for details.`;
           
-          // Escape for GitHub Action Output
-          notes = notes.replace(/%/g, '%25').replace(/\n/g, '%0A').replace(/\r/g, '%0D');
-          console.log(`::set-output name=notes::${notes}`);
+          // Modern way to set output (handles multi-line notes)
+          const crypto = require('crypto');
+          const delimiter = `ghadelimiter_${crypto.randomBytes(8).toString('hex')}`;
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `notes<<${delimiter}\n${notes}\n${delimiter}\n`);
 
   build:
     needs: prepare
@@ -59,7 +60,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install --legacy-peer-deps
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
