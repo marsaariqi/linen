@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.1.4 (2026-05-04)
+
+### New Features
+
+- Added a custom Link Dialog for inserting URLs in WYSIWYG mode
+- Added an interactive Table Grid Selector (up to 10x10) to the WYSIWYG toolbar
+
+### Bug Fixes
+
+- Fixed WYSIWYG toolbar clipping under the header when typing at the bottom of long documents
+- Fixed Table Grid Selector overflowing off the right side of the screen
+- Fixed external links opening inside the application directly after exiting WYSIWYG edit mode
+
 ## v0.1.3 (2026-05-04)
 
 ### New Features

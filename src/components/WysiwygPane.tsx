@@ -17,7 +17,7 @@ import type { Editor } from '@tiptap/core'
 import {
   Bold, Italic, Strikethrough, Code, List, ListOrdered,
   Quote, Undo2, Redo2, Heading1, Heading2, Heading3,
-  Table2, Minus, Link, Code2
+  Table2, Minus, Link, Code2, X, Check
 } from 'lucide-react'
 
 const CustomInlineMathNode = InlineMathNode.extend({
@@ -101,7 +101,7 @@ function ToolbarButton({ onClick, active, icon: Icon, title }: {
       type="button"
       onClick={onClick}
       title={title}
-      className={`p-1.5 rounded transition-colors ${
+      className={`p-1.5 rounded transition-colors flex items-center justify-center ${
         active ? 'bg-primary/15 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted'
       }`}
     >
@@ -110,14 +110,115 @@ function ToolbarButton({ onClick, active, icon: Icon, title }: {
   )
 }
 
+function LinkDialog({ onSubmit, onCancel }: { onSubmit: (url: string) => void, onCancel: () => void }) {
+  const [url, setUrl] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+  useEffect(() => { inputRef.current?.focus() }, [])
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 backdrop-blur-[2px] p-4 animate-in fade-in duration-150" onMouseDown={onCancel}>
+      <div className="bg-card text-card-foreground border border-border rounded-xl shadow-2xl w-full max-w-[400px] overflow-hidden animate-in zoom-in-95 duration-150" onMouseDown={e => e.stopPropagation()}>
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-primary/10 rounded-full text-primary">
+              <Link size={24} />
+            </div>
+            <h3 className="text-lg font-semibold tracking-tight">Insert Link</h3>
+          </div>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+            Enter the URL you want to link to:
+          </p>
+          <input
+            ref={inputRef}
+            type="url"
+            value={url}
+            onChange={e => setUrl(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') onSubmit(url); if (e.key === 'Escape') onCancel(); }}
+            placeholder="https://example.com"
+            className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground"
+          />
+        </div>
+        <div className="bg-muted/30 p-4 px-6 flex justify-end gap-3 border-t border-border">
+          <button onClick={onCancel} className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium hover:bg-muted rounded-lg transition-colors cursor-pointer">
+            <X size={14} />
+            Cancel
+          </button>
+          <button onClick={() => onSubmit(url)} className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-colors shadow-sm cursor-pointer">
+            <Check size={14} />
+            Insert Link
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function TableSelector({ onSelect, onCancel }: { onSelect: (rows: number, cols: number) => void, onCancel: () => void }) {
+  const [hovered, setHovered] = useState({ r: 0, c: 0 })
+  const [alignRight, setAlignRight] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  const maxRows = 10
+  const maxCols = 10
+
+  useEffect(() => {
+    if (ref.current) {
+      const rect = ref.current.getBoundingClientRect()
+      if (rect.right > window.innerWidth - 20) {
+        setAlignRight(true)
+      }
+    }
+    const handleDocClick = () => onCancel()
+    document.addEventListener('mousedown', handleDocClick)
+    return () => document.removeEventListener('mousedown', handleDocClick)
+  }, [onCancel])
+
+  return (
+    <div 
+      ref={ref}
+      className={`absolute top-full mt-1 bg-card border border-border rounded-lg shadow-xl p-3 z-50 animate-in fade-in zoom-in-95 duration-100 ${alignRight ? 'right-0' : 'left-0'}`}
+      onMouseDown={e => e.stopPropagation()}
+    >
+      <div className="text-xs text-muted-foreground font-medium mb-2 text-center select-none">
+        {hovered.r > 0 && hovered.c > 0 ? `${hovered.c} x ${hovered.r} Table` : 'Insert Table'}
+      </div>
+      <div className="flex flex-col gap-1" onMouseLeave={() => setHovered({ r: 0, c: 0 })}>
+        {Array.from({ length: maxRows }).map((_, r) => (
+          <div key={r} className="flex gap-1">
+            {Array.from({ length: maxCols }).map((_, c) => {
+              const isHighlighted = r < hovered.r && c < hovered.c
+              return (
+                <div
+                  key={c}
+                  onMouseEnter={() => setHovered({ r: r + 1, c: c + 1 })}
+                  onClick={() => onSelect(r + 1, c + 1)}
+                  className={`w-4 h-4 border rounded-[1px] cursor-pointer transition-colors ${
+                    isHighlighted ? 'bg-primary/40 border-primary' : 'border-border bg-muted/30'
+                  }`}
+                />
+              )
+            })}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function Toolbar({ editor }: { editor: Editor }) {
-  const setLink = () => {
-    const url = window.prompt('Enter URL')
+  const [showLinkDialog, setShowLinkDialog] = useState(false)
+  const [showTableSelector, setShowTableSelector] = useState(false)
+
+  const handleLinkSubmit = (url: string) => {
     if (url) editor.chain().focus().setLink({ href: url }).run()
+    setShowLinkDialog(false)
+  }
+
+  const handleTableSelect = (rows: number, cols: number) => {
+    editor.chain().focus().insertTable({ rows, cols, withHeaderRow: true }).run()
+    setShowTableSelector(false)
   }
 
   return (
-    <div className="flex items-center gap-1 px-4 py-1.5 border-b border-border bg-background shrink-0 flex-wrap">
+    <div className="flex items-center gap-1 px-4 py-1.5 border-b border-border bg-background shrink-0 flex-wrap relative">
       <ToolbarButton onClick={() => editor.chain().focus().undo().run()} active={false} icon={Undo2} title="Undo" />
       <ToolbarButton onClick={() => editor.chain().focus().redo().run()} active={false} icon={Redo2} title="Redo" />
       <div className="w-px h-5 bg-border mx-1" />
@@ -135,9 +236,18 @@ function Toolbar({ editor }: { editor: Editor }) {
       <ToolbarButton onClick={() => editor.chain().focus().toggleBlockquote().run()} active={editor.isActive('blockquote')} icon={Quote} title="Blockquote" />
       <ToolbarButton onClick={() => editor.chain().focus().toggleCodeBlock().run()} active={editor.isActive('codeBlock')} icon={Code2} title="Code Block" />
       <div className="w-px h-5 bg-border mx-1" />
-      <ToolbarButton onClick={setLink} active={editor.isActive('link')} icon={Link} title="Link" />
-      <ToolbarButton onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()} active={false} icon={Table2} title="Table" />
+      <ToolbarButton onClick={() => setShowLinkDialog(true)} active={editor.isActive('link')} icon={Link} title="Link" />
+      <div className="relative">
+        <ToolbarButton onClick={() => setShowTableSelector(!showTableSelector)} active={showTableSelector} icon={Table2} title="Table" />
+        {showTableSelector && (
+          <TableSelector onSelect={handleTableSelect} onCancel={() => setShowTableSelector(false)} />
+        )}
+      </div>
       <ToolbarButton onClick={() => editor.chain().focus().setHorizontalRule().run()} active={false} icon={Minus} title="Horizontal Rule" />
+
+      {showLinkDialog && (
+        <LinkDialog onSubmit={handleLinkSubmit} onCancel={() => setShowLinkDialog(false)} />
+      )}
     </div>
   )
 }
@@ -375,7 +485,7 @@ export default function WysiwygPane({ content, onContentChange }: Props) {
   if (!editor) return null
 
   return (
-    <div className="h-full w-full flex flex-col">
+    <div className="flex-1 min-h-0 w-full flex flex-col">
       <Toolbar editor={editor} />
       <div className="flex-1 overflow-y-auto" ref={scrollContainerRef}>
         <EditorContent editor={editor} />

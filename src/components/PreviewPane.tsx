@@ -166,7 +166,7 @@ export default function PreviewPane({ content, tabId, resolvedTheme }: Props) {
     }
     container.addEventListener('click', onClick)
     return () => container.removeEventListener('click', onClick)
-  }, [content])
+  }, [content, isEditable])
 
   useEffect(() => {
     const handleScrollToHeading = (e: Event) => {
