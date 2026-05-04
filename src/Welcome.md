@@ -129,6 +129,18 @@ fn main() {
 
 ---
 
+## LaTeX Support
+
+Render mathematical formulas with KaTeX:
+
+**Inline Math**: $E = mc^2$
+
+**Block Math**:
+
+$$\sum_{i=1}^{n} i^2 = \frac{n(n+1)(2n+1)}{6}$$
+
+---
+
 ## Mermaid Diagrams
 
 Embed diagrams directly in your Markdown:
