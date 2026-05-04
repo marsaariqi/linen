@@ -10,6 +10,11 @@
     "fs:default",
     "dialog:default",
     "opener:default",
-    "core:path:default"
+    "core:path:default",
+    "fs:allow-appdata-read",
+    {
+      "identifier": "fs:scope",
+      "allow": [{ "path": "$APPDATA/**" }, { "path": "$APPDATA" }]
+    }
   ]
 }

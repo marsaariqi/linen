@@ -338,6 +338,28 @@
   text-decoration: underline;
 }
 
+/* Math Extension Styles */
+.Tiptap-math {
+  font-family: var(--font-mono);
+  background: hsl(var(--muted) / 0.5);
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.25rem;
+  border: 1px solid hsl(var(--border));
+  transition: all 0.2s;
+}
+
+.Tiptap-math.math-node--active {
+  background: hsl(var(--primary) / 0.1);
+  border-color: hsl(var(--primary) / 0.4);
+  outline: none;
+}
+
+.Tiptap-math-block {
+  display: block;
+  margin: 1rem 0;
+  text-align: center;
+}
+
 /* Find match highlight in preview */
 .find-match-highlight {
   background-color: hsl(var(--primary) / 0.25) !important;

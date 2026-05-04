@@ -2,11 +2,11 @@
   <rect width="512" height="512" rx="140" fill="#000000"/>
   
   <!-- 'l' -->
-  <path d="M 151 120 V 342 C 151 369.6 173.4 392 201 392 H 231" stroke="white" stroke-width="66" stroke-linecap="round"/>
+  <path d="M 161 120 V 342 C 161 369.6 183.4 392 211 392 H 241" stroke="white" stroke-width="66" stroke-linecap="round"/>
   
   <!-- 'i' dot -->
-  <circle cx="311" cy="120" r="33" fill="white"/>
+  <circle cx="321" cy="120" r="33" fill="white"/>
   
   <!-- 'i' stem -->
-  <path d="M 311 260 V 362 C 311 378.6 324.4 392 341 392" stroke="white" stroke-width="66" stroke-linecap="round"/>
+  <path d="M 321 260 V 362 C 321 378.6 334.4 392 351 392" stroke="white" stroke-width="66" stroke-linecap="round"/>
 </svg>

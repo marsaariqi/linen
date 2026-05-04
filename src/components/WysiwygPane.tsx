@@ -10,6 +10,7 @@ import { TaskList } from '@tiptap/extension-task-list'
 import { TaskItem } from '@tiptap/extension-task-item'
 import { Image } from '@tiptap/extension-image'
 import { Markdown } from 'tiptap-markdown'
+import { MathExtension, InlineMathNode } from 'tiptap-math-extension'
 import { common, createLowlight } from 'lowlight'
 import { useTabStore } from '../store/useTabStore'
 import type { Editor } from '@tiptap/core'
@@ -18,6 +19,72 @@ import {
   Quote, Undo2, Redo2, Heading1, Heading2, Heading3,
   Table2, Minus, Link, Code2
 } from 'lucide-react'
+
+const CustomInlineMathNode = InlineMathNode.extend({
+  addStorage() {
+    return {
+      ...this.parent?.(),
+      markdown: {
+        serialize(state: any, node: any) {
+          const latex = node.attrs.latex || ''
+          if (node.attrs.display === 'yes') {
+            state.write(`$$${latex}$$`)
+          } else {
+            state.write(`$${latex}$`)
+          }
+        },
+        parse: {
+          setup(markdownit: any) {
+            markdownit.inline.ruler.before('escape', 'latex', (state: any, silent: any) => {
+              const src = state.src
+              const pos = state.pos
+
+              if (src.slice(pos, pos + 2) === '$$') {
+                const end = src.indexOf('$$', pos + 2)
+                if (end !== -1) {
+                  if (!silent) {
+                    const token = state.push('inlineMath', 'span', 0)
+                    token.attrs = [
+                      ['data-latex', src.slice(pos + 2, end)],
+                      ['data-display', 'yes'],
+                      ['data-type', 'inlineMath']
+                    ]
+                  }
+                  state.pos = end + 2
+                  return true
+                }
+              }
+
+              if (src[pos] === '$') {
+                if (src[pos + 1] === ' ' || src[pos + 1] === '$') return false
+                const end = src.indexOf('$', pos + 1)
+                if (end !== -1 && src[end - 1] !== ' ') {
+                  if (!silent) {
+                    const token = state.push('inlineMath', 'span', 0)
+                    token.attrs = [
+                      ['data-latex', src.slice(pos + 1, end)],
+                      ['data-display', 'no'],
+                      ['data-type', 'inlineMath']
+                    ]
+                  }
+                  state.pos = end + 1
+                  return true
+                }
+              }
+              return false
+            })
+          }
+        }
+      }
+    }
+  }
+})
+
+const CustomMathExtension = MathExtension.extend({
+  addExtensions() {
+    return [CustomInlineMathNode]
+  }
+})
 
 const lowlight = createLowlight(common)
 
@@ -94,7 +161,11 @@ export default function WysiwygPane({ content, onContentChange }: Props) {
       TaskList,
       TaskItem.configure({ nested: true }),
       Image,
-      Markdown.configure({ transformPastedText: true, transformCopiedText: true }),
+      Markdown.configure({
+        transformPastedText: true,
+        transformCopiedText: true,
+      }),
+      CustomMathExtension.configure({ evaluation: false }),
     ],
     content: content,
     editorProps: {

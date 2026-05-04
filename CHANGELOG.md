@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.1.1 (2026-05-04)
+
+### New Features
+
+- Added LaTeX support with KaTeX for both Source and WYSIWYG modes
+- Enhanced WYSIWYG LaTeX synchronization to prevent character escaping
+
+### Bug Fixes
+
+- Fixed Settings panel clipping on smaller screens (laptop size)
+- Fixed "Open App Folder" functionality by adding missing Tauri FS permissions
+- Perfectly centered the application icon horizontally
+
 ## v0.1.0 (2026-05-03)
 
 ### Initial Release

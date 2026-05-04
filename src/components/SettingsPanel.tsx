@@ -57,8 +57,8 @@ export default function SettingsPanel({ onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/60 backdrop-blur-sm p-4">
-      <div className="bg-card text-card-foreground border border-border rounded-xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-muted/40">
+      <div className="bg-card text-card-foreground border border-border rounded-xl shadow-2xl w-full max-w-lg max-h-[85vh] flex flex-col">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-muted/40 shrink-0">
           <h2 className="font-semibold text-lg">Settings</h2>
           <button onClick={onClose} className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
             <X size={18} />

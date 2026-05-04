@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { marked } from 'marked'
 import { markedHighlight } from 'marked-highlight'
+import markedKatex from 'marked-katex-extension'
 import hljs from 'highlight.js'
 import mermaid from 'mermaid'
 import { useTabStore } from '../store/useTabStore'
@@ -34,6 +35,10 @@ marked.use(markedHighlight({
     const language = hljs.getLanguage(normalized) ? normalized : 'plaintext'
     return hljs.highlight(code, { language }).value
   }
+}))
+
+marked.use(markedKatex({
+  throwOnError: false
 }))
 
 marked.use({
