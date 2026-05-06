@@ -38,6 +38,9 @@ Press `Ctrl+Shift+V` to cycle through modes, or click the toolbar buttons:
 | `Ctrl+F`         | Find & Replace (with match case + whole word) |
 | `Ctrl+Shift+V`   | Cycle view modes (Source → Split → Preview)   |
 | `Ctrl+E`         | Toggle Edit / Lock in the preview pane        |
+| `Ctrl+Plus/=`    | Zoom in source editor                         |
+| `Ctrl+Minus`     | Zoom out source editor                        |
+| `Ctrl+0`         | Reset source editor zoom                      |
 
 ---
 
@@ -46,6 +49,8 @@ Press `Ctrl+Shift+V` to cycle through modes, or click the toolbar buttons:
 ### Text Formatting
 
 **Bold**, _italic_, ~~strikethrough~~, `inline code`
+Subscript: `H~2~O` renders as H~2~O
+Superscript: `E=mc^2^` renders as E=mc^2^
 
 ### Headings
 
@@ -80,6 +85,12 @@ Press `Ctrl+Shift+V` to cycle through modes, or click the toolbar buttons:
 Links open in your default browser (with a confirmation dialog):
 
 [Linen on GitHub](https://github.com/marsaariqi/linen)
+
+### Footnotes
+
+You can add footnotes like this[^1].
+
+[^1]: This is the footnote text.
 
 ### Images
 
@@ -187,7 +198,10 @@ Linen includes three themes — change them in **Settings**:
 
 ## Tips
 
-- **Sidebar**: Toggle with `Ctrl+B` to see your document outline — click any heading to jump straight to it.
+- **Drag and Drop**: Simply drag `.md` or `.txt` files from your computer directly into the Linen window to open them as new tabs.
+- **Export**: In Preview mode, use the export buttons in the top right to save your document as a standalone HTML file or print it to a PDF. PDF exports are automatically optimized for printing with a high-contrast light theme and proper multi-page support.
+- **Zooming**: In Source mode, use `Ctrl + Mouse Wheel` or `Ctrl` and `+/-` to adjust the editor's font size. Use `Ctrl + 0` to reset.
+- **Sync Scroll**: In Split view, use the **Sync Scroll** toggle in the toolbar to link or unlink the editor and preview scroll positions. This button is available even when the preview is unlocked for editing.
 - **Tabs**: Create new tabs with `Ctrl+N`, close with `Ctrl+W`, and switch with `Ctrl+Tab` / `Ctrl+Shift+Tab`. Right-click any tab for context actions — close, close others, or reveal the file in Explorer.
 - **Find & Replace**: `Ctrl+F` opens the search bar. Toggle match case and whole word. Replace works in all editable modes.
 - **WYSIWYG Editing**: Unlock the preview with `Ctrl+E` to edit with a rich-text toolbar. If your document has HTML tags, a warning will appear — HTML may be altered in WYSIWYG mode.

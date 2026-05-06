@@ -110,11 +110,14 @@
 
 @layer base {
   * { @apply border-border; }
-  body {
-    @apply bg-background text-foreground font-sans m-0 overflow-hidden select-none;
-    font-feature-settings: "rlig" 1, "calt" 1;
+  html, body, #root {
+    @apply h-full w-full overflow-hidden;
   }
-  .editor-container *, .markdown-body *, .prose * {
+
+  body {
+    @apply bg-background text-foreground font-sans m-0 select-none;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }  .editor-container *, .markdown-body *, .prose * {
     @apply select-text;
   }
 }
@@ -395,3 +398,136 @@
 .cat .hljs-type, .cat .hljs-built_in, .cat .hljs-bullet, .cat .hljs-number, .cat .hljs-symbol { color: #f0a060; }
 .cat .hljs-attr, .cat .hljs-attribute { color: #f0a060; }
 .cat .hljs-link { color: #bd93f9; text-decoration: underline; }
+
+@media screen {
+  .print-only { display: none !important; }
+}
+
+@media print {
+  @page {
+    margin: 20mm !important;
+    size: auto;
+  }
+
+  /* 1. Hide ALL UI components */
+  .no-print, 
+  header, 
+  nav, 
+  footer, 
+  aside, 
+  button,
+  [role="status"],
+  .preview-pane-toolbar,
+  .PanelResizeHandle,
+  .loading-overlay,
+  .export-success-modal,
+  #app-header-bar,
+  #sidebar-panel,
+  #editor-panel,
+  .tab-bar,
+  .status-bar,
+  .find-replace-bar {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* 2. Nuclear Unroll: Force every container to be a simple block */
+  /* This kills flexbox, fixed heights, and hidden overflows that break multi-page printing */
+  html, 
+  body, 
+  #root, 
+  #root > div,
+  [data-panel-group],
+  [data-panel],
+  #content-panel,
+  #content-panel > div,
+  #main-content-wrapper,
+  #preview-panel,
+  #preview-pane-root,
+  #preview-scroll-container,
+  .ProseMirror,
+  .tiptap-editor,
+  .wysiwyg-container {
+    display: block !important;
+    position: static !important;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: white !important;
+    box-shadow: none !important;
+    transform: none !important;
+    flex: none !important;
+    color: black !important;
+  }
+
+  /* 3. Force Light Theme Variables for PDF */
+  :root, .dark, .cat {
+    --background: 0 0% 100% !important;
+    --foreground: 240 10% 3.9% !important;
+    --card: 0 0% 100% !important;
+    --card-foreground: 240 10% 3.9% !important;
+    --primary: 240 5.9% 10% !important;
+    --primary-foreground: 0 0% 98% !important;
+    --muted: 240 4.8% 95.9% !important;
+    --muted-foreground: 240 3.8% 46.1% !important;
+    --border: 240 5.9% 90% !important;
+    --accent: 240 4.8% 95.9% !important;
+    --accent-foreground: 240 5.9% 10% !important;
+  }
+
+  /* 4. The Markdown Body */
+  .markdown-body {
+    display: block !important;
+    overflow: visible !important;
+    height: auto !important;
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: white !important;
+    color: black !important;
+  }
+
+  /* 5. Content flow fixes */
+  h1, h2, h3, h4, h5, h6 { 
+    page-break-after: avoid !important; 
+    color: black !important;
+  }
+  p, blockquote, ul, ol, table, pre { 
+    page-break-inside: auto !important; 
+    color: black !important;
+  }
+  
+  pre, code {
+    background: #f5f5f5 !important;
+    border: 1px solid #ccc !important;
+    page-break-inside: avoid !important;
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    color: #333 !important;
+  }
+
+  /* 6. Mermaid & Diagrams - Rely on native light theme re-render */
+  .mermaid, .mermaid svg {
+    background: white !important;
+    color: black !important;
+  }
+
+  img {
+    max-width: 100% !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Restore links for print */
+  a {
+    color: #0366d6 !important;
+    text-decoration: underline !important;
+  }
+}

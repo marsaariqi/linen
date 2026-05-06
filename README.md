@@ -32,6 +32,9 @@ Linen
 - **Mermaid diagram** rendering (flowchart, sequence, Gantt, class, state, etc.)
 - **Syntax highlighting** for 15+ languages via highlight.js + lowlight
 - **Document outline sidebar** with heading navigation (Ctrl+B to toggle)
+- **Export options**: Export preview to HTML or PDF natively
+- **Drag-and-drop support**: Easily open .md files by dragging them into the window
+- **Markdown Extensibility**: Subscript (`~sub~`), Superscript (`^sup^`), and Footnotes (`[^1]`)
 - **Bidirectional scroll sync** between source editor and preview
 - **Unified Find & Replace** (Ctrl+F) — match case, whole word, DOM-based highlighting in all modes
 - **Image paste** in source (screenshots) and WYSIWYG (screenshots + web images)
@@ -91,9 +94,9 @@ See [RELEASE.md](./RELEASE.md) for the release process, CI/CD workflow, and upda
 ### Planned
 
 - [ ] Spell check / grammar integration
-- [ ] Drag-and-drop file opening
+- [x] Drag-and-drop file opening
 - [ ] Recent files list
-- [ ] Export to PDF / HTML
+- [x] Export to PDF / HTML
 - [ ] Custom CSS snippets for preview
 - [ ] Plugin/extension system
 - [ ] Vim / Emacs keybindings

@@ -9,7 +9,11 @@
     "core:default",
     "fs:default",
     "dialog:default",
-    "opener:default",
+    {
+      "identifier": "opener:default",
+      "allow": [{ "url": "**" }]
+    },
+    "opener:allow-reveal-item-in-dir",
     "core:path:default",
     "fs:allow-appdata-read",
     "fs:allow-appdata-write",

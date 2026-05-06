@@ -9,6 +9,8 @@ import { TableHeader } from '@tiptap/extension-table-header'
 import { TaskList } from '@tiptap/extension-task-list'
 import { TaskItem } from '@tiptap/extension-task-item'
 import { Image } from '@tiptap/extension-image'
+import { Subscript as TiptapSubscript } from '@tiptap/extension-subscript'
+import { Superscript as TiptapSuperscript } from '@tiptap/extension-superscript'
 import { Markdown } from 'tiptap-markdown'
 import { MathExtension, InlineMathNode } from 'tiptap-math-extension'
 import { common, createLowlight } from 'lowlight'
@@ -17,14 +19,53 @@ import type { Editor } from '@tiptap/core'
 import {
   Bold, Italic, Strikethrough, Code, List, ListOrdered,
   Quote, Undo2, Redo2, Heading1, Heading2, Heading3,
-  Table2, Minus, Link, Code2, X, Check
+  Table2, Minus, Link, Code2, X, Check,
+  Subscript as SubscriptIcon, Superscript as SuperscriptIcon
 } from 'lucide-react'
+
+// @ts-expect-error no types available
+import mdSub from 'markdown-it-sub'
+// @ts-expect-error no types available
+import mdSup from 'markdown-it-sup'
+
+const CustomSubscript = TiptapSubscript.extend({
+  addStorage() {
+    return {
+      markdown: {
+        serialize: { open: '~', close: '~', expelEnclosedWhitespace: true },
+        parse: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          setup(markdownit: any) {
+            markdownit.use(mdSub)
+          },
+        },
+      },
+    }
+  },
+})
+
+const CustomSuperscript = TiptapSuperscript.extend({
+  addStorage() {
+    return {
+      markdown: {
+        serialize: { open: '^', close: '^', expelEnclosedWhitespace: true },
+        parse: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          setup(markdownit: any) {
+            markdownit.use(mdSup)
+          },
+        },
+      },
+    }
+  },
+})
 
 const CustomInlineMathNode = InlineMathNode.extend({
   addStorage() {
     return {
       ...this.parent?.(),
       markdown: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         serialize(state: any, node: any) {
           const latex = node.attrs.latex || ''
           if (node.attrs.display === 'yes') {
@@ -34,7 +75,9 @@ const CustomInlineMathNode = InlineMathNode.extend({
           }
         },
         parse: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           setup(markdownit: any) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             markdownit.inline.ruler.before('escape', 'latex', (state: any, silent: any) => {
               const src = state.src
               const pos = state.pos
@@ -229,6 +272,8 @@ function Toolbar({ editor }: { editor: Editor }) {
       <ToolbarButton onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive('bold')} icon={Bold} title="Bold (Ctrl+B)" />
       <ToolbarButton onClick={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive('italic')} icon={Italic} title="Italic (Ctrl+I)" />
       <ToolbarButton onClick={() => editor.chain().focus().toggleStrike().run()} active={editor.isActive('strike')} icon={Strikethrough} title="Strikethrough" />
+      <ToolbarButton onClick={() => editor.chain().focus().toggleSubscript().run()} active={editor.isActive('subscript')} icon={SubscriptIcon} title="Subscript" />
+      <ToolbarButton onClick={() => editor.chain().focus().toggleSuperscript().run()} active={editor.isActive('superscript')} icon={SuperscriptIcon} title="Superscript" />
       <ToolbarButton onClick={() => editor.chain().focus().toggleCode().run()} active={editor.isActive('code')} icon={Code} title="Inline Code" />
       <div className="w-px h-5 bg-border mx-1" />
       <ToolbarButton onClick={() => editor.chain().focus().toggleBulletList().run()} active={editor.isActive('bulletList')} icon={List} title="Bullet List" />
@@ -271,6 +316,8 @@ export default function WysiwygPane({ content, onContentChange }: Props) {
       TaskList,
       TaskItem.configure({ nested: true }),
       Image,
+      CustomSubscript,
+      CustomSuperscript,
       Markdown.configure({
         transformPastedText: true,
         transformCopiedText: true,
@@ -453,7 +500,7 @@ export default function WysiwygPane({ content, onContentChange }: Props) {
 
     const handleSyncScroll = (e: Event) => {
       const event = e as CustomEvent<{ source: string; percentage: number }>
-      if (event.detail.source === 'preview' || blocked || window.isExternalScrollSync || recentlyEdited()) return
+      if (event.detail.source === 'preview' || blocked || window.isExternalScrollSync || recentlyEdited() || !useTabStore.getState().settings.syncScroll) return
       const scroller = scrollContainerRef.current
       if (scroller) {
         blocked = true
@@ -464,7 +511,7 @@ export default function WysiwygPane({ content, onContentChange }: Props) {
     }
 
     const onScroll = () => {
-      if (blocked || justSetContent.current || window.isExternalScrollSync || recentlyEdited()) return
+      if (blocked || justSetContent.current || window.isExternalScrollSync || recentlyEdited() || !useTabStore.getState().settings.syncScroll) return
       const scroller = scrollContainerRef.current
       if (scroller) {
         const percentage = scroller.scrollTop / (scroller.scrollHeight - scroller.clientHeight || 1)

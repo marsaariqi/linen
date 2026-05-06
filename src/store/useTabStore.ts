@@ -22,6 +22,7 @@ export interface AppSettings {
   viewMode: 'source' | 'split' | 'preview'
   checkForUpdates: boolean
   sourceWrap: boolean
+  syncScroll: boolean
 }
 
 export interface SessionData {
@@ -35,6 +36,7 @@ const defaultSettings: AppSettings = {
   viewMode: 'split',
   checkForUpdates: true,
   sourceWrap: false,
+  syncScroll: true,
 }
 
 function createBlankTab(overrides?: Partial<TabData>): TabData {

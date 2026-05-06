@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useMemo, memo } from 'react'
+import { useCallback, useEffect, useRef, useMemo, memo, useState } from 'react'
 import CodeMirror from '@uiw/react-codemirror'
 import type { ReactCodeMirrorRef } from '@uiw/react-codemirror'
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
@@ -41,6 +41,7 @@ function EditorPane({ tab, resolvedTheme, sourceWrap }: Props) {
   const { updateTabContent } = useTabStore()
   const editorRef = useRef<ReactCodeMirrorRef>(null)
   const userTyping = useRef(false) // true when user edits, false when external
+  const [fontSize, setFontSize] = useState(14)
 
   const onChange = useCallback((value: string) => {
     userTyping.current = true
@@ -93,7 +94,7 @@ function EditorPane({ tab, resolvedTheme, sourceWrap }: Props) {
 
     const handleSyncScroll = (e: Event) => {
       const event = e as CustomEvent<{ source: string; percentage: number }>
-      if (event.detail.source === 'editor' || window.isExternalScrollSync) return
+      if (event.detail.source === 'editor' || window.isExternalScrollSync || !useTabStore.getState().settings.syncScroll) return
       const view = editorRef.current?.view
       if (view) {
         const scroller = view.scrollDOM
@@ -133,17 +134,48 @@ function EditorPane({ tab, resolvedTheme, sourceWrap }: Props) {
       }
     }
 
+    const handleWheelZoom = (e: WheelEvent) => {
+      if (e.ctrlKey) {
+        e.preventDefault()
+        if (e.deltaY < 0) {
+          setFontSize(prev => Math.min(prev + 1, 48))
+        } else if (e.deltaY > 0) {
+          setFontSize(prev => Math.max(prev - 1, 8))
+        }
+      }
+    }
+
+    const handleKeyZoom = (e: KeyboardEvent) => {
+      if (e.ctrlKey) {
+        if (e.key === '=' || e.key === '+') {
+          e.preventDefault()
+          setFontSize(prev => Math.min(prev + 1, 48))
+        } else if (e.key === '-') {
+          e.preventDefault()
+          setFontSize(prev => Math.max(prev - 1, 8))
+        } else if (e.key === '0') {
+          e.preventDefault()
+          setFontSize(14)
+        }
+      }
+    }
+
     window.addEventListener('scroll-to-heading', handleScrollToHeading)
     window.addEventListener('sync-scroll', handleSyncScroll)
     window.addEventListener('find-navigate', handleFindNavigate)
     window.addEventListener('find-highlights', handleFindHighlights as EventListener)
     window.addEventListener('find-clear', handleClearFindHighlights)
+    window.addEventListener('wheel', handleWheelZoom, { passive: false })
+    window.addEventListener('keydown', handleKeyZoom)
+    
     return () => {
       window.removeEventListener('scroll-to-heading', handleScrollToHeading)
       window.removeEventListener('sync-scroll', handleSyncScroll)
       window.removeEventListener('find-navigate', handleFindNavigate)
       window.removeEventListener('find-highlights', handleFindHighlights as EventListener)
       window.removeEventListener('find-clear', handleClearFindHighlights)
+      window.removeEventListener('wheel', handleWheelZoom)
+      window.removeEventListener('keydown', handleKeyZoom)
     }
   }, [])
 
@@ -182,6 +214,11 @@ function EditorPane({ tab, resolvedTheme, sourceWrap }: Props) {
     markdown({ base: markdownLanguage, codeLanguages: languages }),
     findHighlightField,
     ...(sourceWrap ? [EditorView.lineWrapping] : []),
+    EditorView.theme({
+      "&": {
+        fontSize: `${fontSize}px`
+      }
+    }),
     EditorView.domEventHandlers({
       scroll: (event) => {
         if (editorSyncBlocked) return
@@ -190,7 +227,7 @@ function EditorPane({ tab, resolvedTheme, sourceWrap }: Props) {
         window.dispatchEvent(new CustomEvent('sync-scroll', { detail: { source: 'editor', percentage } }))
       }
     }),
-  ], [sourceWrap])
+  ], [sourceWrap, fontSize])
 
   return (
     <div className="flex-1 overflow-auto h-full editor-container">
@@ -201,7 +238,7 @@ function EditorPane({ tab, resolvedTheme, sourceWrap }: Props) {
         extensions={extensions}
         onChange={onChange}
         theme={resolvedTheme === 'dark' ? oneDark : githubLight}
-        className="h-full text-base font-mono"
+        className="h-full font-mono"
         basicSetup={{
           lineNumbers: true,
           foldGutter: true,

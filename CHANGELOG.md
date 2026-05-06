@@ -1,5 +1,30 @@
 # Changelog
 
+## v0.2.0 (2026-05-05)
+
+### New Features
+
+- **Major: Advanced HTML & PDF Export**
+    - Added ability to export Markdown to HTML and PDF formats directly from the Preview pane
+    - Implemented a "Nuclear Unroll" strategy for PDF, ensuring multi-page documents flow correctly without clipping
+    - Forced High-Contrast Light Theme for all PDF exports, ensuring readability regardless of active app theme
+    - Native Mermaid diagram support in PDF: Diagrams now automatically re-render with a light theme for the final document
+    - Sanitized PDF output by removing all application UI elements (tabs, status bar, toolbars)
+- Added **Sync Scroll toggle** in Split view: Easily enable or disable bidirectional scrolling between the editor and preview (available in both locked and unlocked modes)
+- Added editor zooming in Source view: Use `Ctrl + Mouse Wheel` or `Ctrl` and `+/-` to adjust font size (`Ctrl + 0` to reset)
+- Added drag-and-drop file opening support for `.md` and `.txt` files
+- Added extended Markdown syntax support: Subscripts (`~text~`), Superscripts (`^text^`), and Footnotes (`[^1]`)
+- Improved security by sanitizing HTML content rendered in the Markdown preview using DOMPurify
+- Refined internal document navigation (e.g., Table of Contents links) to perfectly scroll to elements without breaking the app UI
+
+### Improvements & Bug Fixes
+
+- **Toolbar & UI**:
+    - Re-designed Preview toolbar with horizontal scrolling for better usability on narrow split-views
+    - Improved responsiveness of fixed UI elements to prevent clipping during resize
+- Fixed WYSIWYG toolbar clipping under the header in long documents
+
+
 ## v0.1.4 (2026-05-04)
 
 ### New Features
