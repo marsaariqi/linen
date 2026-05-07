@@ -152,6 +152,24 @@ export default function SettingsPanel({ onClose }: Props) {
                 </div>
               </label>
             </div>
+
+            <div className="flex items-center justify-between">
+              <div className="pr-4">
+                <div className="font-medium text-sm">Show Welcome Screen</div>
+                <div className="text-xs text-muted-foreground mt-0.5">Show Welcome.md when no files are open</div>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="sr-only"
+                  checked={settings.showWelcome}
+                  onChange={(e) => updateSettings({ showWelcome: e.target.checked })}
+                />
+                <div className={`w-11 h-6 rounded-full transition-colors ${settings.showWelcome ? 'bg-primary' : 'bg-muted-foreground/30'} relative`}>
+                  <div className={`absolute top-[2px] left-[2px] bg-background border border-border w-5 h-5 rounded-full transition-transform ${settings.showWelcome ? 'translate-x-5' : ''}`}></div>
+                </div>
+              </label>
+            </div>
           </div>
 
           <div className="space-y-5">

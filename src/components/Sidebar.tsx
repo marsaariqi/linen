@@ -7,18 +7,22 @@ interface Props {
 }
 
 export default function Sidebar({ tab, onClose }: Props) {
-  if (!tab) return null
-
   // Very simple markdown heading parser
-  const headings = []
-  const regex = /^(#{1,6})\s+(.*)$/gm
-  let match
-  while ((match = regex.exec(tab.content)) !== null) {
-    headings.push({
-      level: match[1].length,
-      text: match[2]
-    })
+  const getHeadings = () => {
+    if (!tab) return []
+    const headings = []
+    const regex = /^(#{1,6})\s+(.*)$/gm
+    let match
+    while ((match = regex.exec(tab.content)) !== null) {
+      headings.push({
+        level: match[1].length,
+        text: match[2]
+      })
+    }
+    return headings
   }
+
+  const headings = getHeadings()
 
   return (
     <div className="flex flex-col h-full overflow-hidden select-none bg-muted/20 border-r border-border/50">
@@ -36,7 +40,11 @@ export default function Sidebar({ tab, onClose }: Props) {
         </button>
       </div>
       <div className="flex-1 overflow-y-auto p-3 no-scrollbar space-y-0.5">
-        {headings.length === 0 ? (
+        {!tab ? (
+          <div className="text-[13px] text-muted-foreground/60 italic p-4 text-center mt-4">
+            No active document.
+          </div>
+        ) : headings.length === 0 ? (
           <div className="text-[13px] text-muted-foreground/60 italic p-4 text-center">
             No headings found in this document.
           </div>

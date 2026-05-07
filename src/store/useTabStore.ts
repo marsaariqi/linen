@@ -23,6 +23,7 @@ export interface AppSettings {
   checkForUpdates: boolean
   sourceWrap: boolean
   syncScroll: boolean
+  showWelcome: boolean
 }
 
 export interface SessionData {
@@ -37,6 +38,7 @@ const defaultSettings: AppSettings = {
   checkForUpdates: true,
   sourceWrap: false,
   syncScroll: true,
+  showWelcome: true,
 }
 
 function createBlankTab(overrides?: Partial<TabData>): TabData {
@@ -127,7 +129,9 @@ export const useTabStore = create<TabStoreState>((set, get) => ({
       if (tabs.length > 0 && state.tabs.find(t => t.id === id)?.isActive) {
         tabs[tabs.length - 1].isActive = true
       }
-      if (tabs.length === 0) tabs = [createBlankTab({ title: 'Welcome.md', content: welcomeContent, isDirty: 0 })]
+      if (tabs.length === 0 && state.settings.showWelcome) {
+        tabs = [createBlankTab({ title: 'Welcome.md', content: welcomeContent, isDirty: 0 })]
+      }
       saveSession({ settings: state.settings, openTabs: tabs })
       return { tabs }
     })
@@ -137,7 +141,9 @@ export const useTabStore = create<TabStoreState>((set, get) => ({
   closeAll: (force = false) => {
     if (!force && get().tabs.some(t => t.isDirty === 1)) return false
     set((state) => {
-      const tabs = [createBlankTab({ title: 'Welcome.md', content: welcomeContent, isDirty: 0 })]
+      const tabs = state.settings.showWelcome 
+        ? [createBlankTab({ title: 'Welcome.md', content: welcomeContent, isDirty: 0 })]
+        : []
       saveSession({ settings: state.settings, openTabs: tabs })
       return { tabs }
     })
@@ -173,8 +179,20 @@ export const useTabStore = create<TabStoreState>((set, get) => ({
   updateSettings: (newSettings) => {
     set((state) => {
       const settings = Object.assign({}, state.settings, newSettings)
-      saveSession({ settings, openTabs: state.tabs })
-      return { settings }
+      let tabs = state.tabs
+
+      if (newSettings.showWelcome === true && state.settings.showWelcome === false) {
+        const welcomeIdx = tabs.findIndex(t => t.title === 'Welcome.md' && t.filePath === null)
+        if (welcomeIdx === -1) {
+          tabs = [createBlankTab({ title: 'Welcome.md', content: welcomeContent, isDirty: 0 }), ...deactivateAll(tabs)]
+        } else {
+          const welcomeTab = { ...tabs[welcomeIdx], isActive: true }
+          tabs = [welcomeTab, ...deactivateAll(tabs.filter((_, i) => i !== welcomeIdx))]
+        }
+      }
+
+      saveSession({ settings, openTabs: tabs })
+      return { settings, tabs }
     })
   },
 
@@ -213,10 +231,6 @@ export const useTabStore = create<TabStoreState>((set, get) => ({
     try {
       const session = await loadSession()
       if (session) {
-        const tabs = session.settings?.restoreLastSession && session.openTabs?.length
-          ? session.openTabs
-          : [createBlankTab({ title: 'Welcome.md', content: welcomeContent, isDirty: 0 })]
-
         const settings = Object.assign({}, defaultSettings, session.settings)
         if ('splitView' in session.settings) {
           const legacy = session.settings as unknown as Record<string, unknown>
@@ -225,12 +239,19 @@ export const useTabStore = create<TabStoreState>((set, get) => ({
           }
           delete (settings as unknown as Record<string, unknown>).splitView
         }
+
+        const tabs = settings.restoreLastSession && session.openTabs?.length
+          ? session.openTabs
+          : (settings.showWelcome ? [createBlankTab({ title: 'Welcome.md', content: welcomeContent, isDirty: 0 })] : [])
+
         set({ settings, tabs, isLoaded: true })
       } else {
-        set({ tabs: [createBlankTab({ title: 'Welcome.md', content: welcomeContent, isDirty: 0 })], isLoaded: true })
+        const tabs = defaultSettings.showWelcome ? [createBlankTab({ title: 'Welcome.md', content: welcomeContent, isDirty: 0 })] : []
+        set({ tabs, isLoaded: true })
       }
     } catch {
-      set({ tabs: [createBlankTab({ title: 'Welcome.md', content: welcomeContent, isDirty: 0 })], isLoaded: true })
+      const tabs = defaultSettings.showWelcome ? [createBlankTab({ title: 'Welcome.md', content: welcomeContent, isDirty: 0 })] : []
+      set({ tabs, isLoaded: true })
     }
   },
 

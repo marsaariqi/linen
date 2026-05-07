@@ -14,6 +14,8 @@ import {
   PanelLeftOpen,
   FolderOpen,
   Save,
+  Plus,
+  FileText,
 } from "lucide-react";
 import Sidebar from "./components/Sidebar";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
@@ -402,8 +404,44 @@ function App() {
                 )}
               </PanelGroup>
             ) : (
-              <div className="flex-1 flex items-center justify-center text-muted-foreground">
-                No active tab. Create a new one to start writing.
+              <div className="flex-1 flex flex-col items-center justify-center bg-background p-8 text-center animate-in fade-in duration-500">
+                <div className="w-20 h-20 bg-muted/50 rounded-2xl flex items-center justify-center mb-6 border border-border/50 shadow-sm group-hover:scale-105 transition-transform duration-300">
+                  <FileText size={40} className="text-muted-foreground/40" />
+                </div>
+                <h3 className="text-xl font-semibold text-foreground mb-2">No active document</h3>
+                <p className="text-muted-foreground max-w-[320px] mb-8 text-sm leading-relaxed">
+                  Start by creating a new document or open an existing Markdown file from your computer.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    onClick={() => addTab()}
+                    className="flex items-center justify-center gap-2 px-6 py-2.5 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-all font-medium text-sm shadow-sm"
+                  >
+                    <Plus size={18} />
+                    New Document
+                  </button>
+                  <button
+                    onClick={() => openFile()}
+                    className="flex items-center justify-center gap-2 px-6 py-2.5 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-all font-medium text-sm border border-border shadow-sm"
+                  >
+                    <FolderOpen size={18} />
+                    Open File
+                  </button>
+                </div>
+                <div className="mt-12 flex items-center gap-6 text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground/50">
+                  <div className="flex items-center gap-2">
+                    <kbd className="px-1.5 py-0.5 bg-muted border border-border rounded text-[10px] text-muted-foreground/80">
+                      Ctrl+N
+                    </kbd>
+                    New
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <kbd className="px-1.5 py-0.5 bg-muted border border-border rounded text-[10px] text-muted-foreground/80">
+                      Ctrl+O
+                    </kbd>
+                    Open
+                  </div>
+                </div>
               </div>
             )}
           </div>

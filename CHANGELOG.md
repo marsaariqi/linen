@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.2.1 (2026-05-07)
+
+### New Features
+
+- **Improved Empty State Experience**:
+    - Added a "Show Welcome Screen" setting to toggle the automatic appearance of `Welcome.md` when no files are open.
+    - Redesigned the "No active document" view with a modern UI, including quick-action buttons for creating a new document or opening an existing file.
+    - Added keyboard shortcut hints to the empty state view for better discoverability.
+- **Enhanced Sidebar Behavior**:
+    - The Sidebar header and close button now remain visible even when no document is active.
+    - Added a dedicated "No active document" message in the sidebar to maintain UI consistency.
+
 ## v0.2.0 (2026-05-05)
 
 ### New Features
