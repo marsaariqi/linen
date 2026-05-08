@@ -21,6 +21,27 @@ export default function TabBar() {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
+  // Auto-scroll to active tab
+  useEffect(() => {
+    if (scrollRef.current) {
+      const activeTabElement = scrollRef.current.querySelector('[data-active="true"]') as HTMLElement
+      if (activeTabElement) {
+        const activeTabIndex = tabs.findIndex(t => t.isActive)
+        const isLastTab = activeTabIndex === tabs.length - 1
+
+        if (isLastTab) {
+          // If it's the last tab, scroll to the end to show the "New Tab" button too
+          scrollRef.current.scrollTo({
+            left: scrollRef.current.scrollWidth,
+            behavior: 'smooth'
+          })
+        } else {
+          activeTabElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' })
+        }
+      }
+    }
+  }, [tabs])
+
   const handleWheel = (e: React.WheelEvent) => {
     if (scrollRef.current) {
       scrollRef.current.scrollLeft += e.deltaY
@@ -94,6 +115,7 @@ export default function TabBar() {
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             onContextMenu={(e) => handleContextMenu(e, tab.id)}
+            data-active={tab.isActive}
             className={cn(
               "group flex items-center gap-2 px-4 py-2 min-w-[140px] max-w-[220px] cursor-pointer transition-all text-[13px] h-full relative shrink-0 border-r border-border/50",
               tab.isActive

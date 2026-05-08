@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.2 (2026-05-08)
+
+### Improvements
+
+- **Tab Bar Auto-Scroll**: New or opened tabs now automatically scroll into view, ensuring they are not hidden behind toolbar icons when many tabs are open.
+
 ## v0.2.1 (2026-05-07)
 
 ### New Features
