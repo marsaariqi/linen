@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.2.3 (2026-07-02)
+
+### Improvements & Bug Fixes
+
+- **CodeMirror Line Numbers**: Made line numbers in the source editor unselectable to prevent interference when selecting document text.
+- **Horizontal Scroll on New Line**: Added automatic horizontal scroll reset to the left when a newline is created in the source editor, ensuring bullet list markers are visible when list items wrap/scroll.
+- **ESLint Warnings Fix**: Removed unused `html2pdf.js` imports and suppressed typescript-eslint errors to make the project linter pass.
+
 ## v0.2.2 (2026-05-08)
 
 ### Improvements

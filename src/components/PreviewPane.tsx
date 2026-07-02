@@ -13,8 +13,7 @@ import WysiwygPane from './WysiwygPane'
 import ExternalLinkDialog from './ExternalLinkDialog'
 import { save } from '@tauri-apps/plugin-dialog'
 import { writeTextFile } from '@tauri-apps/plugin-fs'
-// @ts-ignore
-import html2pdf from 'html2pdf.js'
+
 
 const languageMap: Record<string, string> = {
   'javascript': 'js', 'js': 'js', 'jsx': 'js',

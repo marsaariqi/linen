@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useMemo, memo, useState } from 'react'
 import CodeMirror from '@uiw/react-codemirror'
 import type { ReactCodeMirrorRef } from '@uiw/react-codemirror'
-import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
+import { markdown, markdownLanguage, markdownKeymap } from '@codemirror/lang-markdown'
 import { languages } from '@codemirror/language-data'
-import { EditorView, Decoration } from '@codemirror/view'
+import { EditorView, Decoration, keymap } from '@codemirror/view'
 import { StateEffect, StateField } from '@codemirror/state'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { githubLight } from '@uiw/codemirror-theme-github'
@@ -212,11 +212,29 @@ function EditorPane({ tab, resolvedTheme, sourceWrap }: Props) {
 
   const extensions = useMemo(() => [
     markdown({ base: markdownLanguage, codeLanguages: languages }),
+    keymap.of(markdownKeymap),
     findHighlightField,
     ...(sourceWrap ? [EditorView.lineWrapping] : []),
     EditorView.theme({
       "&": {
         fontSize: `${fontSize}px`
+      }
+    }),
+    EditorView.updateListener.of((update) => {
+      if (update.docChanged) {
+        let insertedNewline = false
+        update.changes.iterChanges((_fromA, _toA, _fromB, _toB, inserted) => {
+          if (inserted.toString().includes('\n')) {
+            insertedNewline = true
+          }
+        })
+        if (insertedNewline) {
+          requestAnimationFrame(() => {
+            if (update.view.scrollDOM) {
+              update.view.scrollDOM.scrollLeft = 0
+            }
+          })
+        }
       }
     }),
     EditorView.domEventHandlers({

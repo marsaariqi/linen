@@ -207,6 +207,10 @@
   border-right: 1px solid hsl(var(--border)) !important;
   color: hsl(var(--muted-foreground)) !important;
 }
+.editor-container .cm-gutters,
+.editor-container .cm-gutters * {
+  user-select: none !important;
+}
 .editor-container .cm-activeLineGutter {
   background-color: hsl(var(--primary) / 0.06) !important;
 }
